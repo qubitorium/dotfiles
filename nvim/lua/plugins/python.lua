@@ -1,22 +1,19 @@
 return {
   {
     "neovim/nvim-lspconfig",
-    opts = {
-      servers = {
-        pyright = false, -- disable default pyright
-        basedpyright = {
-          settings = {
-            basedpyright = {
-              analysis = {
-                typeCheckingMode = "basic", -- "off" | "basic" | "strict"
-                diagnosticMode = "openFilesOnly",
-                autoSearchPaths = true,
-                useLibraryCodeForTypes = true,
-              },
+    config = function()
+      require("lspconfig").basedpyright.setup({
+        settings = {
+          python = {
+            analysis = {
+              typeCheckingMode = "basic",
+              diagnosticMode = "openFilesOnly",
+              autoSearchPaths = true,
+              useLibraryCodeForTypes = true,
             },
           },
         },
-      },
-    },
+      })
+    end,
   },
 }
