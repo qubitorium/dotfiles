@@ -7,5 +7,5 @@ vim.opt.signcolumn = "no"
 vim.opt.statuscolumn = "%s%2l"
 vim.opt.wrap = true
 vim.opt.shiftwidth = 4
-vim.opt.tabstop = 8
+vim.opt.tabstop = 4
 vim.opt.expandtab = true
