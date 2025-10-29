@@ -12,3 +12,6 @@ vim.keymap.set("n", "J", "mzJ`z")
 -- just keeps cursor at center when u page up or down
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
 vim.keymap.set("n", "<C-u>", "<C-u>zz")
+
+-- the classic
+vim.keymap.set("n", "<C-a>", "ggvG")
