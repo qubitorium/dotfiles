@@ -26,6 +26,21 @@ return {
                 single_file_support = true,
             })
 
+            --intelephense (php lsp)
+            lspconfig.intelephense.setup({
+                cmd = { "intelephense", "--stdio" },
+                filetypes = { "php" },
+                single_file_support = true,
+                root_markers = { ".git", "composer.json" },
+                settings = {
+                    intelephense = {
+                        telemetry = {
+                            enabled = false,
+                        },
+                    },
+                },
+            })
+
             -- Emmet
             lspconfig.emmet_language_server.setup({
                 cmd = { "emmet-language-server", "--stdio" },
