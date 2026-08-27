@@ -1,0 +1,34 @@
+# <signal.h>
+# Modern, robust mechanism for inspecting or changing signal handling behaviors.
+
+SYNTAX:
+  int sigaction(int signum, const struct sigaction *act, struct sigaction *oldact);
+
+STRUCT SIGACTION FIELDS:
+  sa_handler : Pointer to signal handler function void (*)(int) or SIG_IGN / SIG_DFL.
+  sa_mask    : Mask of signals blocked during execution of handler.
+  sa_flags   : SA_RESTART (automatically restart interrupted system calls), SA_SIGINFO.
+
+COMPLETE CODE EXAMPLE:
+  #include <signal.h>
+  #include <stdio.h>
+  #include <unistd.h>
+
+  void handle_sigint(int sig) {
+      const char msg[] = "\nCaught SIGINT (Ctrl+C). Cleaning up memory...\n";
+      write(STDOUT_FILENO, msg, sizeof(msg) - 1); // Async-signal-safe write
+  }
+
+  int main() {
+      struct sigaction sa;
+      sa.sa_handler = handle_sigint;
+      sigemptyset(&sa.sa_mask);
+      sa.sa_flags = SA_RESTART;
+
+      if (sigaction(SIGINT, &sa, NULL) < 0) {
+          perror("sigaction registration failed");
+          return 1;
+      }
+
+      while(1) sleep(1);
+  }

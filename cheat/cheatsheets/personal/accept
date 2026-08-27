@@ -1,0 +1,26 @@
+# <sys/socket.h>
+# Extracts first connection request on listening socket queue; returns new connected socket descriptor.
+
+SYNTAX:
+  int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+
+RETURN VALUE:
+  Success: File descriptor for connected client socket. Original listening socket remains open.
+  Error  : Returns -1 and sets errno.
+
+THREAD SAFETY / MULTI-THREADING:
+  - Blocking by default.
+  - Can be used in multi-threaded worker pools or event loops (epoll/select).
+
+COMPLETE CODE EXAMPLE:
+  #include <sys/socket.h>
+  #include <netinet/in.h>
+  #include <stdio.h>
+
+  struct sockaddr_in client_addr;
+  socklen_t client_len = sizeof(client_addr);
+
+  int client_fd = accept(server_fd, (struct sockaddr *)&client_addr, &client_len);
+  if (client_fd < 0) {
+      perror("Accept failed");
+  }

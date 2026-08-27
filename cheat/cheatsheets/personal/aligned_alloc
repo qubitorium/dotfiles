@@ -1,0 +1,32 @@
+# <stdlib.h> (C11 Standard)
+# Allocates size bytes aligned on specified alignment boundary.
+
+SYNTAX:
+  void *aligned_alloc(size_t alignment, size_t size);
+
+STRICT CONSTRAINTS:
+  1. alignment must be a valid power of 2.
+  2. size MUST be an exact integer multiple of alignment.
+
+ALIGNMENT VS POSIX_MEMALIGN:
+  - aligned_alloc standardizes C11 memory alignment across operating systems.
+  - Free the memory with standard free().
+
+COMPLETE CODE EXAMPLE:
+  #include <stdio.h>
+  #include <stdlib.h>
+
+  #define ALIGNMENT 64 // 64-byte alignment (AVX-512 / Cache line)
+  #define COUNT 1024
+
+  // Size MUST be multiple of ALIGNMENT:
+  size_t bytes = (COUNT * sizeof(double) + ALIGNMENT - 1) & ~(ALIGNMENT - 1);
+
+  double *vec = (double *)aligned_alloc(ALIGNMENT, bytes);
+  if (!vec) {
+      perror("Allocation failed");
+      return 1;
+  }
+
+  vec[0] = 3.14159;
+  free(vec);

@@ -1,0 +1,24 @@
+# <unistd.h>
+# Replaces current process memory image with a new process (searches system PATH environment).
+
+SYNTAX:
+  int execvp(const char *file, char *const argv[]);
+
+PARAMETERS:
+  file : Executable file name (searches PATH automatically if no slash '/').
+  argv : Array of null-terminated string pointers. argv[0] must be executable name; array MUST end with NULL.
+
+RETURN VALUE:
+  Returns ONLY if an error occurs (-1). On success, control does not return as process is replaced.
+
+COMPLETE CODE EXAMPLE:
+  #include <unistd.h>
+  #include <stdio.h>
+
+  char *args[] = {"gcc", "-O3", "-fopenmp", "main.c", "-o", "main", NULL};
+
+  printf("Executing compiler...\n");
+  execvp(args[0], args);
+
+  // Lines below execute ONLY if execvp failed
+  perror("execvp failed to launch gcc");

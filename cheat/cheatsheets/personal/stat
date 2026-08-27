@@ -1,0 +1,33 @@
+# <sys/stat.h> <sys/types.h> <unistd.h>
+# Obtains information/metadata about a file given its pathname.
+
+SYNTAX:
+  int stat(const char *pathname, struct stat *statbuf);
+  int fstat(int fd, struct stat *statbuf); // Stat on open fd
+
+STRUCT STAT KEY FIELDS:
+  st_size  : File size in bytes.
+  st_mode  : File type and access permissions bitmask.
+  st_mtime : Time of last modification.
+  st_uid   : User ID of file owner.
+
+HELPER MACROS FOR FILE TYPES (Pass st_mode):
+  S_ISREG(st_mode)  : Regular file?
+  S_ISDIR(st_mode)  : Directory?
+  S_ISLNK(st_mode)  : Symbolic link?
+
+COMPLETE CODE EXAMPLE:
+  #include <sys/stat.h>
+  #include <stdio.h>
+
+  struct stat st;
+  if (stat("/tmp/data.raw", &st) == 0) {
+      printf("Size: %ld bytes\n", st.st_size);
+      if (S_ISDIR(st.st_mode)) {
+          printf("Path is a directory\n");
+      } else if (S_ISREG(st.st_mode)) {
+          printf("Path is a regular file\n");
+      }
+  } else {
+      perror("stat failed");
+  }

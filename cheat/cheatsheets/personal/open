@@ -1,0 +1,54 @@
+# <fcntl.h> <sys/stat.h> <sys/types.h>
+# Opens or creates a file descriptor for low-level system I/O operations.
+
+SYNTAX:
+  int open(const char *pathname, int flags);
+  int open(const char *pathname, int flags, mode_t mode); // Required when creating files
+
+COMMON FLAGS:
+  O_RDONLY    : Open for read-only.
+  O_WRONLY    : Open for write-only.
+  O_RDWR      : Open for reading and writing.
+  O_CREAT     : Create file if it does not exist (requires mode argument).
+  O_EXCL      : Fail if file already exists (used with O_CREAT for atomic creation).
+  O_TRUNC     : Truncate file length to 0 if it exists and is writeable.
+  O_APPEND    : Append data to the end of the file on every write.
+  O_NONBLOCK  : Open in non-blocking mode (returns immediately for FIFO/sockets).
+  O_CLOEXEC   : Automatically close file descriptor on exec call (thread-safe).
+  O_DIRECT    : Minimize cache effects (bypasses page cache for direct HPC disk I/O).
+
+MODE BITMASKS (Octal or symbolic):
+  0644 (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH) : Read/Write owner, Read group/others.
+  0755 (S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) : Full owner, Read/Exec others.
+
+RETURN VALUE:
+  Success: Lowest unallocated File Descriptor integer (>= 0).
+  Error  : -1 and sets 'errno'.
+
+COMMON ERRNO VALUES:
+  EACCES : Permission denied.
+  EEXIST : O_CREAT and O_EXCL were set and the file exists.
+  ENOENT : Component of path does not exist or named file does not exist.
+  EMFILE : Per-process limit on open file descriptors reached.
+  EISDIR : Path refers to a directory and write access was requested.
+
+COMPLETE CODE EXAMPLE:
+  #include <fcntl.h>
+  #include <stdio.h>
+  #include <unistd.h>
+  #include <errno.h>
+  #include <string.h>
+
+  int fd = open("dataset.raw", O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC, 0644);
+  if (fd == -1) {
+      fprintf(stderr, "Failed to open dataset: %s\n", strerror(errno));
+      return -1;
+  }
+
+  const char *msg = "HPC payload data\n";
+  ssize_t bytes_written = write(fd, msg, strlen(msg));
+  if (bytes_written == -1) {
+      perror("Write error");
+  }
+
+  close(fd);

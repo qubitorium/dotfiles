@@ -1,0 +1,28 @@
+# <string.h>
+# Copies up to n characters from src string to dest.
+
+SYNTAX:
+  char *strncpy(char *dest, const char *src, size_t n);
+
+CRITICAL CAVEATS & BEHAVIOR:
+  1. If length of src < n, strncpy pads dest with null bytes until n bytes total are written.
+  2. If length of src >= n, dest will NOT be null-terminated! This causes severe buffer read overruns.
+
+BEST PRACTICE NULL-TERMINATION PATTERN:
+  strncpy(dest, src, sizeof(dest) - 1);
+  dest[sizeof(dest) - 1] = '\0'; // Guaranteed null termination
+
+RETURN VALUE:
+  Returns pointer to dest.
+
+COMPLETE CODE EXAMPLE:
+  #include <stdio.h>
+  #include <string.h>
+
+  char src[] = "High Performance Computing";
+  char dest[16];
+
+  strncpy(dest, src, sizeof(dest) - 1);
+  dest[sizeof(dest) - 1] = '\0'; // Prevents undefined behavior
+
+  printf("Safely truncated: %s\n", dest); // Prints "High Performanc"

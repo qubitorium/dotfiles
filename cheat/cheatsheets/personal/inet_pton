@@ -1,0 +1,25 @@
+# <arpa/inet.h>
+# Converts IP address from text representation to binary network byte-order structure.
+
+SYNTAX:
+  int inet_pton(int af, const char *src, void *dst);
+
+PARAMETERS:
+  af  : Address family (AF_INET for IPv4, AF_INET6 for IPv6).
+  src : String containing IP address ("192.168.1.1" or "fe80::1").
+  dst : Pointer to buffer holding binary address (struct in_addr or struct in6_addr).
+
+RETURN VALUE:
+   1 : Conversion successful.
+   0 : src string does not contain a valid network address format.
+  -1 : Invalid address family specified (errno set to EAFNOSUPPORT).
+
+COMPLETE CODE EXAMPLE:
+  #include <arpa/inet.h>
+  #include <stdio.h>
+
+  struct in_addr addr;
+  int res = inet_pton(AF_INET, "10.0.0.1", &addr);
+  if (res <= 0) {
+      printf("Invalid or unsupported IP string\n");
+  }

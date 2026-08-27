@@ -1,0 +1,35 @@
+# <stdlib.h>
+# Robust string-to-long integer conversion with full error detection.
+
+SYNTAX:
+  long int strtol(const char *nptr, char **endptr, int base);
+
+PARAMETERS:
+  nptr   : Target string to convert.
+  endptr : Reference to store pointer to first invalid character after number.
+  base   : Number base (0 auto-detects 0x hex, 0 octal; otherwise 2 to 36).
+
+ERROR DETECTION:
+  - Check errno for ERANGE (overflow/underflow).
+  - If endptr == nptr, no digits were parsed at all.
+  - If *endptr != '\0', trailing non-digit characters exist.
+
+COMPLETE CODE EXAMPLE:
+  #include <stdio.h>
+  #include <stdlib.h>
+  #include <errno.h>
+
+  const char *str = "4096MB";
+  char *endptr;
+  errno = 0;
+
+  long val = strtol(str, &endptr, 10);
+
+  if (errno == ERANGE) {
+      perror("Number out of range");
+  } else if (endptr == str) {
+      printf("No valid digits found\n");
+  } else {
+      printf("Parsed integer: %ld\n", val);
+      printf("Remaining suffix: %s\n", endptr); // Prints "MB"
+  }

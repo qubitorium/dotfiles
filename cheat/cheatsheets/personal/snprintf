@@ -1,0 +1,28 @@
+# <stdio.h>
+# Formats output and writes it to a buffer with explicit size limits, preventing buffer overflows.
+
+SYNTAX:
+  int snprintf(char *str, size_t size, const char *format, ...);
+
+RETURN VALUE:
+  Success: Number of characters (excluding null-byte) that WOULD have been written if buffer was infinite.
+  Truncation: If return value >= size, output was truncated!
+
+SAFE DYNAMIC ALLOCATION PATTERN:
+  size_t needed = snprintf(NULL, 0, "Rank %d host: %s", rank, hostname) + 1;
+  char *buf = malloc(needed);
+  snprintf(buf, needed, "Rank %d host: %s", rank, hostname);
+
+COMPLETE CODE EXAMPLE:
+  #include <stdio.h>
+
+  char buf[32];
+  int rank = 12;
+  double walltime = 143.521;
+
+  int ret = snprintf(buf, sizeof(buf), "MPI Rank [%d] time: %.2fs", rank, walltime);
+  if (ret >= sizeof(buf)) {
+      printf("Warning: Output truncated! Needed %d bytes\n", ret);
+  } else {
+      printf("Formatted string: %s\n", buf);
+  }

@@ -1,0 +1,29 @@
+# <unistd.h>
+# Repositions the read/write file offset of an open file descriptor.
+
+SYNTAX:
+  off_t lseek(int fd, off_t offset, int whence);
+
+WHENCE DIRECTIVES:
+  SEEK_SET : Offset is set to offset bytes from file start.
+  SEEK_CUR : Offset is set to current location plus offset bytes.
+  SEEK_END : Offset is set to size of the file plus offset bytes.
+
+RETURN VALUE:
+  Success: Resulting offset location in bytes from beginning of file.
+  Error  : Returns (off_t) -1 and sets errno (e.g. ESPIPE on sockets/pipes).
+
+COMPLETE CODE EXAMPLE:
+  #include <unistd.h>
+  #include <fcntl.h>
+  #include <stdio.h>
+
+  int fd = open("matrix.dat", O_RDONLY);
+  
+  // Calculate file size instantly
+  off_t file_size = lseek(fd, 0, SEEK_END);
+  printf("File size: %ld bytes\n", file_size);
+
+  // Seek back to beginning
+  lseek(fd, 0, SEEK_SET);
+  close(fd);

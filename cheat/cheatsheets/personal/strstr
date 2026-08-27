@@ -1,0 +1,27 @@
+# <string.h>
+# Locates the first occurrence of substring needle in string haystack.
+
+SYNTAX:
+  char *strstr(const char *haystack, const char *needle);
+
+RETURN VALUE:
+  Success: Pointer to the beginning of the located substring inside haystack.
+  Null   : Pointer NULL if needle is not found.
+  Empty  : Returns haystack if needle points to an empty string ("").
+
+POINTER ARITHMETIC (GET INDEX):
+  size_t index = match_ptr - haystack;
+
+COMPLETE CODE EXAMPLE:
+  #include <stdio.h>
+  #include <string.h>
+
+  const char *log_line = "[ERROR] Node 42 reached temperature threshold";
+  const char *target = "Node 42";
+
+  char *match = strstr(log_line, target);
+  if (match != NULL) {
+      printf("Found match '%s' starting at byte offset: %ld\n", target, match - log_line);
+  } else {
+      printf("Target not found\n");
+  }

@@ -1,0 +1,48 @@
+# <stdlib.h>
+# Allocates aligned memory blocks required for SIMD vectorization (AVX-2, AVX-512) and cache alignment.
+
+SYNTAX:
+  int posix_memalign(void **memptr, size_t alignment, size_t size);
+
+ALIGNMENT REQUIREMENTS:
+  1. Alignment must be a power of two (2, 4, 8, 16, 32, 64, 128...).
+  2. Alignment must be a multiple of sizeof(void *) (e.g., 8 bytes on 64-bit systems).
+
+COMMON ALIGNMENT BOUNDARIES FOR HPC:
+  16 bytes : SSE instructions
+  32 bytes : AVX / AVX2 instructions
+  64 bytes : AVX-512 instructions & Standard L1 Cache Line size (prevents false sharing)
+
+RETURN VALUE:
+  Success: Returns 0. The allocated memory address is stored in *memptr.
+  Error  : Returns an error number (does NOT set errno directly).
+
+ERROR CODES:
+  EINVAL : Alignment argument was not a valid power of 2 or multiple of sizeof(void *).
+  ENOMEM : Insufficient memory available to fulfill the allocation.
+
+COMPATIBILITY & DEALLOCATION:
+  - Free memory using standard free(*memptr). Do NOT use custom free functions.
+  - C11 Alternative: aligned_alloc(alignment, size) - Note: size must be multiple of alignment.
+
+COMPLETE CODE EXAMPLE:
+  #include <stdlib.h>
+  #include <stdio.h>
+
+  #define ALIGNMENT 64 // 64-byte alignment for AVX-512
+  #define N 1024
+
+  double *data = NULL;
+  int ret = posix_memalign((void **)&data, ALIGNMENT, N * sizeof(double));
+  if (ret != 0) {
+      fprintf(stderr, "posix_memalign failed with error code: %d\n", ret);
+      return 1;
+  }
+
+  // Compiler can now safely vectorize loop using aligned vector loads (__builtin_assume_aligned)
+  double *arr = __builtin_assume_aligned(data, 64);
+  for (int i = 0; i < N; i++) {
+      arr[i] = i * 2.5;
+  }
+
+  free(data);

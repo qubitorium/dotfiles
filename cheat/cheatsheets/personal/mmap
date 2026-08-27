@@ -1,0 +1,50 @@
+# <sys/mman.h> <unistd.h>
+# Maps files or devices into process address space for direct memory-mapped I/O and huge page allocation.
+
+SYNTAX:
+  void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
+  int munmap(void *addr, size_t length);
+
+PROT (PROTECTION) FLAGS:
+  PROT_NONE  : Pages may not be accessed.
+  PROT_READ  : Pages may be read.
+  PROT_WRITE : Pages may be written.
+  PROT_EXEC  : Pages may be executed.
+
+FLAGS:
+  MAP_SHARED    : Share mapping. Updates are visible to other processes and written to file.
+  MAP_PRIVATE   : Private copy-on-write mapping. Modifications are not written to file.
+  MAP_ANONYMOUS : Mapping is not backed by any file (fd ignored, set to -1). Used for raw memory.
+  MAP_POPULATE  : Pre-fault page tables (populates memory immediately, avoids page faults during compute).
+  MAP_HUGETLB   : Allocate mapping using huge pages (TLB efficiency for large datasets).
+
+RETURN VALUE:
+  Success: Pointer to the mapped area.
+  Error  : MAP_FAILED ((void *) -1) and sets 'errno'.
+
+PERFORMANCE TUNING (madvise):
+  madvise(addr, length, MADV_SEQUENTIAL); // Read-ahead optimization
+  madvise(addr, length, MADV_WILLNEED);   // Expect access soon
+  madvise(addr, length, MADV_DONTNEED);   // Free underlying physical memory pages
+
+COMPLETE CODE EXAMPLE:
+  #include <sys/mman.h>
+  #include <fcntl.h>
+  #include <stdio.h>
+  #include <unistd.h>
+
+  size_t size = 1024 * 1024 * sizeof(float); // 4MB buffer
+  
+  // Anonymous allocation pre-faulted for high performance
+  float *buf = mmap(NULL, size, PROT_READ | PROT_WRITE, 
+                    MAP_PRIVATE | MAP_ANONYMOUS | MAP_POPULATE, -1, 0);
+
+  if (buf == MAP_FAILED) {
+      perror("mmap failed");
+      return 1;
+  }
+
+  buf[0] = 42.0f;
+  
+  // Clean up
+  munmap(buf, size);

@@ -1,0 +1,25 @@
+# <unistd.h>
+# Writes count bytes from buffer to file descriptor fd.
+
+SYNTAX:
+  ssize_t write(int fd, const void *buf, size_t count);
+
+RETURN VALUE:
+  >0 : Number of bytes written. (Can write less than count on sockets/pipes).
+  -1 : Error occurred (errno set).
+
+COMMON ERRNO CODES:
+  EPIPE  : Connected pipe or socket reader closed writing end (SIGPIPE sent).
+  ENOSPC : Device out of disk space.
+  EINTR  : Call was interrupted by a signal before writing bytes.
+
+COMPLETE CODE EXAMPLE:
+  #include <unistd.h>
+  #include <stdio.h>
+  #include <string.h>
+
+  const char *msg = "Direct POSIX low-level write call\n";
+  ssize_t ret = write(STDOUT_FILENO, msg, strlen(msg));
+  if (ret == -1) {
+      perror("Write error");
+  }

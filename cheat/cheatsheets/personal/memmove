@@ -1,0 +1,32 @@
+# <string.h>
+# Copies n bytes from src memory block to dest block. Safe for OVERLAPPING regions.
+
+SYNTAX:
+  void *memmove(void *dest, const void *src, size_t n);
+
+PARAMETERS:
+  dest : Pointer to the destination array where content is copied.
+  src  : Pointer to the source of data to copy.
+  n    : Number of bytes to copy.
+
+RETURN VALUE:
+  Returns a pointer to dest.
+
+MEMCPY VS MEMMOVE:
+  - memcpy() assumes non-overlapping regions and causes undefined behavior if regions overlap.
+  - memmove() uses an intermediate buffer (or copies backwards) to safely handle overlapping blocks.
+
+COMPLETE CODE EXAMPLE:
+  #include <stdio.h>
+  #include <string.h>
+
+  int arr[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  int n = sizeof(arr) / sizeof(arr[0]);
+
+  // Shift elements right by 2 positions (overlapping regions)
+  // Shift arr[0..7] into arr[2..9]
+  memmove(&arr[2], &arr[0], 8 * sizeof(int));
+
+  // Result: 1, 2, 1, 2, 3, 4, 5, 6, 7, 8
+  for (int i = 0; i < n; i++) printf("%d ", arr[i]);
+  printf("\n");

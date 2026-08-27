@@ -1,0 +1,21 @@
+# <sys/socket.h>
+# Marks a stream socket as passive to accept incoming connection requests.
+
+SYNTAX:
+  int listen(int sockfd, int backlog);
+
+PARAMETERS:
+  sockfd  : File descriptor returned by socket().
+  backlog : Maximum length of pending incoming connection queue.
+
+HPC PERFORMANCE TUNING:
+  - If backlog queue fills, incoming TCP clients receive ECONNREFUSED.
+  - Set backlog to SOMAXCONN (e.g. 128 or 4096 depending on kernel /proc/sys/net/core/somaxconn).
+
+COMPLETE CODE EXAMPLE:
+  #include <sys/socket.h>
+  #include <stdio.h>
+
+  if (listen(sockfd, SOMAXCONN) < 0) {
+      perror("Listen failed");
+  }

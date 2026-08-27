@@ -1,0 +1,28 @@
+# <unistd.h>
+# Reads count bytes from file descriptor fd into buffer memory.
+
+SYNTAX:
+  ssize_t read(int fd, void *buf, size_t count);
+
+RETURN VALUE:
+  >0 : Number of bytes actually read. May be smaller than count (e.g. non-blocking or near EOF).
+   0 : Reached End of File (EOF).
+  -1 : Error occurred (errno set).
+
+COMMON ERRNO CODES:
+  EAGAIN / EWOULDBLOCK : Non-blocking socket/fd and no data available currently.
+  EINTR                : Interrupted by a system signal before any data was read.
+  EBADF                : fd is not a valid open file descriptor.
+
+ROBUST POSIX READ LOOP PATTERN:
+  ssize_t nread;
+  size_t total = 0;
+  while (total < count) {
+      nread = read(fd, (char*)buf + total, count - total);
+      if (nread == -1) {
+          if (errno == EINTR) continue; // Retry on signal
+          break; // Hard error
+      }
+      if (nread == 0) break; // EOF
+      total += nread;
+  }

@@ -1,0 +1,28 @@
+# <string.h>
+# Thread-safe re-entrant parser that breaks string into sequence of zero or more tokens.
+
+SYNTAX:
+  char *strtok_r(char *str, const char *delim, char **saveptr);
+
+PARAMETERS:
+  str     : String to tokenize on first call; NULL on subsequent calls.
+  delim   : String containing set of delimiter bytes.
+  saveptr : Pointer to char* variable used internally to maintain state between calls.
+
+WARNING:
+  - Modifies the original string by inserting null terminators ('\0') at delimiter locations.
+  - Never pass string literals (e.g. strtok_r("a,b,c", ...)) as they are read-only.
+  - Standard strtok() uses static internal storage and IS NOT thread-safe. Always use strtok_r().
+
+COMPLETE CODE EXAMPLE:
+  #include <stdio.h>
+  #include <string.h>
+
+  char csv_line[] = "MPI_Init,MPI_Send,MPI_Recv,MPI_Finalize";
+  char *saveptr;
+
+  char *token = strtok_r(csv_line, ",", &saveptr);
+  while (token != NULL) {
+      printf("Token: %s\n", token);
+      token = strtok_r(NULL, ",", &saveptr);
+  }

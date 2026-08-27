@@ -1,0 +1,25 @@
+# <string.h>
+# Lexicographically compares at most n bytes of two strings.
+
+SYNTAX:
+  int strncmp(const char *s1, const char *s2, size_t n);
+
+RETURN VALUE:
+  0 : The first n bytes of s1 and s2 are equal.
+ <0 : The first mismatched character in s1 has a lower ASCII value than in s2.
+ >0 : The first mismatched character in s1 has a greater ASCII value than in s2.
+
+THREAD SAFETY & SECURITY:
+  - Thread-safe.
+  - Always preferred over strcmp() when parsing untrusted input or fixed command buffers to prevent out-of-bounds reads.
+
+COMPLETE CODE EXAMPLE:
+  #include <stdio.h>
+  #include <string.h>
+
+  const char *cmd = "--threads=8";
+
+  if (strncmp(cmd, "--threads=", 10) == 0) {
+      const char *val = cmd + 10;
+      printf("Thread count specified: %s\n", val);
+  }
